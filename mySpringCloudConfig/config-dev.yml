@@ -1,56 +1,30 @@
-spring:
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    username: root
-    password: mysteel
-    hikari:
-      maximumPoolSize: 20
-      max-lifetime: 570000
-      connection-test-query: select 1
-    type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:mysql://192.168.201.119:3306/data_warehouse?useUnicode=true&characterEncoding=utf8&autoReconnect=true
-  dubbo:
-    server: true
-    registry: zookeeper://dubbo1.banksteel.local:2181?backup=dubbo2.banksteel.local:2182,dubbo3.banksteel.local:2183
-  redis:
-    database: 2
-    password:
-    timeout: 5000ms
-    sentinel:
-      master: bigdata
-      nodes: 192.168.200.117:26382,192.168.200.117:26381,192.168.200.117:26383
-    pool:
-      max-idle: 8
-      min-idle: 1
-      max-active: 8
-      max-wait: -1ms
-mybatis:
-  mapperLocations: classpath:mapper/*.xml
-  type-aliases-package: com.banksteel.bigdata.inventory.domain
 eureka:
-  client:
-    serviceUrl:
-      defaultZone: http://eureka-bigdata-0.banksteel-bigdata-eureka-server:8761/eureka/,http://eureka-bigdata-1.banksteel-bigdata-eureka-server:8761/eureka/,http://eureka-bigdata-2.banksteel-bigdata-eureka-server:8761/eureka/
   instance:
+    hostname: localhost
     prefer-ip-address: true
-    instance-id: ${spring.cloud.client.ip-address}:${server.port}
-ribbon:
-  ReadTimeout: 5000
-  ConnectTimeout: 5000
+  client:
+    service-url:
+      defaultZone: http://${eureka.instance.hostname}:8761/eureka/
+
 feign:
+  compression:
+    request:
+      enabled: true
+      min-request-size: 2048
+      mime-types:
+        - text/xml,application/xml,application/json
+    response:
+      enabled: true
+  #开启熔断、降低
   hystrix:
     enabled: true
+
 hystrix:
-  threadpool:
-    default:
-      coreSize: 200
-      maxQueueSize: 200
-      queueSizeRejectionThreshold: 50
   command:
     default:
       execution:
+        timeout:
+          enabled: true
         isolation:
           thread:
-            timeoutInMilliseconds: 60000
-
-env: dev
+            timeoutInMilliseconds: 1000
