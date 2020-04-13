@@ -18,12 +18,4 @@ feign:
   #开启熔断、降低
   hystrix:
     enabled: true
-hystrix:
-  command:
-    default:
-      execution:
-        timeout:
-          enabled: true
-        isolation:
-          thread:
-            timeoutInMilliseconds: 1000
+
